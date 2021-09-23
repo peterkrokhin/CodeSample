@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GPNA.DataFiltration.App
+namespace GPNA.DataFiltration.Application
 {
     public class FilterConfig
     {

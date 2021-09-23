@@ -1,4 +1,5 @@
 using System;
+using GPNA.DataFiltration.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -21,6 +22,9 @@ namespace GPNA.DataFiltration.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            services.AddInfrastructureLayerServices(connectionString);
+            
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -50,7 +54,6 @@ namespace GPNA.DataFiltration.WebApi
                         }
                     };
                 });
-
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

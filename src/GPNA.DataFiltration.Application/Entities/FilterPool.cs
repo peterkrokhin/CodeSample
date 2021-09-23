@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace GPNA.DataFiltration.App
+namespace GPNA.DataFiltration.Application
 {
     public class FilterPool
     {

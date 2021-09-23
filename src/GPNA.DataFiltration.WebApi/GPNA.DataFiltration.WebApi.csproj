@@ -13,4 +13,9 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GPNA.DataFiltration.Application\GPNA.DataFiltration.Application.csproj" />
+    <ProjectReference Include="..\GPNA.DataFiltration.Infrastructure\GPNA.DataFiltration.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
