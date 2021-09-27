@@ -1,3 +1,4 @@
+using GPNA.DataFiltration.Application;
 using GPNA.DataFiltration.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -20,6 +21,7 @@ namespace GPNA.DataFiltration.WebApi
             string connectionString = _configuration.GetConnectionString("DefaultConnection");
             services.AddInfrastructureLayerServices(connectionString);
             services.AddWebApiLayerServices(_configuration);
+            services.AddApplicationLayerServices();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -1,6 +1,10 @@
-﻿namespace GPNA.DataFiltration.Application
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace GPNA.DataFiltration.Application
 {
-    public interface IFilterConfigRepo: IGenericRepo<FilterPool>
+    public interface IFilterConfigRepo: IGenericRepo<FilterConfig>
     {
+        Task<IEnumerable<FilterConfig>> GetAllIncludePool();
     }
 }
