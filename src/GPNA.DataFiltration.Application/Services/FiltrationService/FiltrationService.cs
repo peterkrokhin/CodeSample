@@ -2,10 +2,6 @@
 {
     public class FiltrationService
     {
-        //private readonly ConcurrentQueue<ParameterValue> _src = new();
-        //private readonly ConcurrentQueue<ParameterValue> _good = new();
-        //private readonly ConcurrentQueue<ParameterValue> _bad = new();
-        //private readonly IFilterConfigRepo _filters;
         private readonly IFilterStore _filterStore;
 
         public FiltrationService(IFilterStore filterStore)
@@ -18,11 +14,12 @@
             bool filterResult = true;
             if (parameter.Value == null)
             {
-                return true; // или false
+                return false;
             }
-
-           // var sourceTopic = "temp topic";
-            // var filters = _filters.GetBySourceTopicAndWellIdAndParameterId(sourceTopic, parameter.WellId, parameter.ParameterId);
+            if (parameter.Timestamp == null)
+            {
+                return false;
+            }
 
             FilterKey key = new(sourceTopic, parameter.WellId, parameter.ParameterId);
             var filters = _filterStore.GetFilterDataByFilterKey(key);

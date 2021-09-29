@@ -5,9 +5,9 @@ namespace GPNA.DataFiltration.Application
 {
     public class FilterFunctionFactory
     {
-        public const string VALUE_RANGE_FILTER_TYPE = "ValueRange";
-        public const string FRONT_DETECT_FILTER_TYPE = "FrontDetect";
-        public const string MEASUREMENT_TIME_FILTER_TYPE = "MeasurementTime";
+        private const string VALUE_RANGE_FILTER_TYPE = "ValueRange";
+        private const string FRONT_DETECT_FILTER_TYPE = "FrontDetect";
+        private const string MEASUREMENT_TIME_FILTER_TYPE = "MeasurementTime";
 
         public static Func<ParameterValue, bool>? GetFilterFunction(FilterData filter)
         {
@@ -93,8 +93,8 @@ namespace GPNA.DataFiltration.Application
 
             function = (ParameterValue parameter) =>
             {
-                bool result = (details.Positive.Value & !details.PrevValue.Value & (parameter.Value == 1)) |
-                    (details.Negative.Value & details.PrevValue.Value & (parameter.Value == 0));
+                bool result = (details.Positive.Value & !details.PrevValue.Value & (parameter.Value == 1.0d)) |
+                    (details.Negative.Value & details.PrevValue.Value & (parameter.Value == 0.0d));
                 return result;
             };
 
