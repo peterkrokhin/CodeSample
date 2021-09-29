@@ -16,35 +16,47 @@ namespace GPNA.DataFiltration.Infrastructure
             _dbSet = dbContext.Set<T>();
         }
 
-        public async Task<T> Add(T entity)
+        public async Task<T> AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
-            await _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return entity;
         }
 
-        public async Task Delete(T entity)
+        public async Task DeleteAsync(T entity)
         {
             _dbSet.Remove(entity);
-            await _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAll()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
             var result = await _dbSet.ToListAsync();
             return result;
         }
 
-        public async Task<T> GetById(long id)
+        public T? GetById(long id)
+        {
+            var result = _dbSet.Find(id);
+            return result;
+        }
+
+        public async Task<T?> GetByIdAsync(long id)
         {
             var result = await _dbSet.FindAsync(id);
             return result;
         }
 
-        public async Task Update(T entity)
+        public void Update(T entity)
         {
             _dbSet.Update(entity);
-            await _dbContext.SaveChanges();
+            _dbContext.SaveChanges();
+        }
+
+        public async Task UpdateAsync(T entity)
+        {
+            _dbSet.Update(entity);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

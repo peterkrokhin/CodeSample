@@ -6,6 +6,7 @@ namespace GPNA.DataFiltration.Infrastructure
     public interface IAppDbContext
     {
         DbSet<T> Set<T>() where T : class;
-        Task SaveChanges();
+        Task SaveChangesAsync();
+        void SaveChanges();
     }
 }

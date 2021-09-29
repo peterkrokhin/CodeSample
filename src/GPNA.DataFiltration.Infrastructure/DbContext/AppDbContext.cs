@@ -12,9 +12,14 @@ namespace GPNA.DataFiltration.Infrastructure
         {
         }
 
-        public new async Task SaveChanges()
+        public async Task SaveChangesAsync()
         {
             await base.SaveChangesAsync();
+        }
+
+        public new void SaveChanges()
+        {
+            base.SaveChanges();
         }
     }
 }

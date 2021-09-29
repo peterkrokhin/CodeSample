@@ -16,4 +16,8 @@
     <ProjectReference Include="..\GPNA.DataFiltration.Infrastructure\GPNA.DataFiltration.Infrastructure.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
 </Project>

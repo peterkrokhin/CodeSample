@@ -1,12 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace GPNA.DataFiltration.Application
 {
     class FilterStoreService : BackgroundService
     {
+        private const int NEXT_TRY_CACHE_UPDATE_MILLISECONDS = 10_000;
         private readonly IFilterStore _filterStore;
 
         public FilterStoreService(IFilterStore filterStore)
@@ -18,10 +18,17 @@ namespace GPNA.DataFiltration.Application
         {
             try
             {
-                await _filterStore.StartCyclicUpdate();
+                _filterStore.CacheUpdate();
             }
             catch
             {
+                // Логгировать
+
+                // Повторять
+                //await Task.Delay(NEXT_TRY_CACHE_UPDATE_MILLISECONDS, cancellationToken);
+                //await ExecuteAsync(cancellationToken);
+
+                // Временно
                 throw;
             }
         }

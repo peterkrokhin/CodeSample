@@ -1,11 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace GPNA.DataFiltration.Application
 {
     public interface IFilterStore
     {
-        Task StartCyclicUpdate();
+        void CacheUpdate();
         public IEnumerable<FilterData>? GetFilterDataByFilterKey(FilterKey key);
+        void ModifyFilterDataByFilterKey(FilterKey key, FilterData newFilterData);
+        IEnumerable<string> GetSourceTopics();
+        IEnumerable<string> GetGoodTopics();
+        IEnumerable<string> GetBadTopics();
+
     }
 }

@@ -5,11 +5,13 @@ namespace GPNA.DataFiltration.Application
 {
     public interface IGenericRepo<T>
     {
-        Task<IEnumerable<T>> GetAll();
-        Task<T> GetById(long id);
-        Task Update(T entity);
-        Task<T> Add(T entity);
-        Task Delete(T entity);
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<T?> GetByIdAsync(long id);
+        T? GetById(long id);
+        Task UpdateAsync(T entity);
+        void Update(T entity);
+        Task<T> AddAsync(T entity);
+        Task DeleteAsync(T entity);
 
     }
 }
