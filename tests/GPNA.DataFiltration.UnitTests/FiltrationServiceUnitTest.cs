@@ -56,42 +56,42 @@ namespace GPNA.DataFiltration.UnitTests
                 .Add(
                     new FilterKey("ValueRange", 1, 1),
                     new List<FilterData>() { 
-                        new FilterData(10, "ValueRange", "{\"Min\": 111.111, \"Max\": 222.222}")
+                        new FilterData(10, "ValueRange", "{\"Min\": 111.111, \"Max\": 222.222}", null, null)
                     });
 
             _filterCache
                 .Add(
                     new FilterKey("FrontDetect Positive PrevValueFalse", 1, 1),
                     new List<FilterData>() { 
-                        new FilterData(10, "FrontDetect", "{\"Positive\": true, \"Negative\": false, \"PrevValue\": false}") 
+                        new FilterData(10, "FrontDetect", "{\"Positive\": true, \"Negative\": false}", "0.0", null) 
                     });
 
             _filterCache
                 .Add(
                     new FilterKey("FrontDetect Positive PrevValueTrue", 1, 1),
                     new List<FilterData>() {
-                        new FilterData(10, "FrontDetect", "{\"Positive\": true, \"Negative\": false, \"PrevValue\": true}")
+                        new FilterData(10, "FrontDetect", "{\"Positive\": true, \"Negative\": false}", "1.0", null)
                     });
 
             _filterCache
                 .Add(
                     new FilterKey("FrontDetect Negative PrevValueFalse", 1, 1),
                     new List<FilterData>() {
-                        new FilterData(10, "FrontDetect", "{\"Positive\": false, \"Negative\": true, \"PrevValue\": false}")
+                        new FilterData(10, "FrontDetect", "{\"Positive\": false, \"Negative\": true}", "0.0", null)
                     });
 
             _filterCache
                 .Add(
                     new FilterKey("FrontDetect Negative PrevValueTrue", 1, 1),
                     new List<FilterData>() {
-                        new FilterData(10, "FrontDetect", "{\"Positive\": false, \"Negative\": true, \"PrevValue\": true}")
+                        new FilterData(10, "FrontDetect", "{\"Positive\": false, \"Negative\": true}", "1.0", null)
                     });
 
             _filterCache
                 .Add(
                     new FilterKey("MeasurementTime", 1, 1),
                     new List<FilterData>() {
-                        new FilterData(10, "MeasurementTime", "{\"Min\": 10, \"Max\": 20, \"PrevTimeStamp\": \"2021-01-10T00:00:00.000\"}")
+                        new FilterData(10, "MeasurementTime", "{\"Min\": 10, \"Max\": 20}", null, DateTime.Parse("2021-01-10T00:00:00.000"))
                     });
 
             _filterCache
@@ -103,14 +103,14 @@ namespace GPNA.DataFiltration.UnitTests
                 .Add(
                     new FilterKey("NotValidFilterType", 1, 1),
                     new List<FilterData>() {
-                        new FilterData(10, "NotValid", "{\"Min\": 111.111, \"Max\": 222.222}")
+                        new FilterData(10, "NotValid", "{\"Min\": 111.111, \"Max\": 222.222}", null, null)
                     });
 
             _filterCache
                 .Add(
                     new FilterKey("NotValidFilterDetails", 1, 1),
                     new List<FilterData>() {
-                        new FilterData(10, "ValueRange", "{\"NotValid\": 111.111, \"Max\": 222.222}")
+                        new FilterData(10, "ValueRange", "{\"NotValid\": 111.111, \"Max\": 222.222}", null, null)
                     });
         }
     }

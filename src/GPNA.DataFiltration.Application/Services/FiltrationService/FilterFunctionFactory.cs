@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text.Json;
 
 namespace GPNA.DataFiltration.Application
@@ -38,7 +39,7 @@ namespace GPNA.DataFiltration.Application
             {
                 details = JsonSerializer.Deserialize<ValueRangeFilterDetails>(filter.FilterDetails);
             }
-            catch (Exception e)
+            catch
             {
                 return null;
             }
@@ -47,14 +48,7 @@ namespace GPNA.DataFiltration.Application
             {
                 return null;
             }
-            if (details.Min == null)
-            {
-                return null;
-            }
-            if (details.Max == null)
-            {
-                return null;
-            }
+            
 
             function = (ParameterValue parameter) =>
                 (parameter.Value >= details.Min) & (parameter.Value <= details.Max);
@@ -66,6 +60,7 @@ namespace GPNA.DataFiltration.Application
         {
             Func<ParameterValue, bool>? function = null;
             FrontDetectFilterDetails? details = null;
+            double prevValue;
             try
             {
                 details = JsonSerializer.Deserialize<FrontDetectFilterDetails>(filter.FilterDetails);
@@ -74,30 +69,28 @@ namespace GPNA.DataFiltration.Application
             {
                 return null;
             }
+
             if (details == null)
             {
                 return null;
             }
-            if (details.Positive == null)
+
+            try
             {
-                return null;
+                prevValue = Convert
+                    .ToDouble(filter.PrevValue, new NumberFormatInfo { NumberDecimalSeparator = "." });
             }
-            if (details.Negative == null)
-            {
-                return null;
-            }
-            if (details.PrevValue == null)
+            catch
             {
                 return null;
             }
 
             function = (ParameterValue parameter) =>
             {
-                bool result = (details.Positive.Value & !details.PrevValue.Value & (parameter.Value == 1.0d)) |
-                    (details.Negative.Value & details.PrevValue.Value & (parameter.Value == 0.0d));
+                bool result = (details.Positive & (prevValue == 0d) & (parameter.Value == 1d)) |
+                    (details.Negative & (prevValue == 1d) & (parameter.Value == 0.0d));
                 return result;
             };
-
 
             return function;
         }
@@ -119,16 +112,8 @@ namespace GPNA.DataFiltration.Application
             {
                 return null;
             }
-            if (details.Min == null)
-            {
-                return null;
-            }
-            if (details.Max == null)
-            {
-                return null;
-            }
 
-            if (details.PrevTimeStamp == null)
+            if (filter.PrevTimeStamp == null)
             {
                 return null;
             }
@@ -139,9 +124,9 @@ namespace GPNA.DataFiltration.Application
                 {
                     return true;
                 }
-                TimeSpan minDuration = TimeSpan.FromMinutes(details.Min.Value);
-                TimeSpan maxDuration = TimeSpan.FromMinutes(details.Max.Value);
-                TimeSpan currentDuration = parameter.Timestamp.Value - details.PrevTimeStamp.Value;
+                TimeSpan minDuration = TimeSpan.FromMinutes(details.Min);
+                TimeSpan maxDuration = TimeSpan.FromMinutes(details.Max);
+                TimeSpan currentDuration = parameter.Timestamp.Value - filter.PrevTimeStamp.Value;
                 bool result = (currentDuration >= minDuration) & (currentDuration <= maxDuration);
                 return result;
             };

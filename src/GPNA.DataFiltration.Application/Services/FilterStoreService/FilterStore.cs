@@ -47,7 +47,13 @@ namespace GPNA.DataFiltration.Application
             foreach (var fc in allFilterConfigs)
             {
                 var key = new FilterKey(fc.FilterPool.SourceTopic, fc.WellId, fc.ParameterId);
-                FilterData newFilterData = new(fc.Id, fc.FilterType, fc.FilterDetails);
+                FilterData newFilterData = new(
+                    fc.Id, 
+                    fc.FilterType, 
+                    fc.FilterDetails, 
+                    fc.PrevValue,
+                    fc.PrevTimeStamp);
+
                 if (newCache.ContainsKey(key))
                 {
                     newCache[key].Add(newFilterData);
@@ -78,6 +84,11 @@ namespace GPNA.DataFiltration.Application
                 _filterCache.TryGetValue(key, out filterDataList);
             }
             return filterDataList;
+        }
+
+        public void SetPrevValueInFilterConfig(FilterKey key, ParameterValue parameter)
+        {
+
         }
 
         public void ModifyFilterDataByFilterKey(FilterKey key, FilterData newFilterData)

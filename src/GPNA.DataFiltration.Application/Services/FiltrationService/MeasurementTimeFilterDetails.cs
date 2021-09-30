@@ -2,5 +2,5 @@
 
 namespace GPNA.DataFiltration.Application
 {
-    record MeasurementTimeFilterDetails(int? Min, int? Max, DateTime? PrevTimeStamp);
+    record MeasurementTimeFilterDetails(int Min, int Max);
 }

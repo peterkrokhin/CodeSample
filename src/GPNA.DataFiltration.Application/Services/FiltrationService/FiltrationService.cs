@@ -35,6 +35,8 @@
                 if (function != null)
                 {
                     filterResult &= function(parameter);
+
+                    //_filterStore.SetPrevValueInFilterDetail(key, filter, parameter.Value);
                 }
             }
 

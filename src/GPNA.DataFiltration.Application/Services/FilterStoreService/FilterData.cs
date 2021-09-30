@@ -1,4 +1,11 @@
-﻿namespace GPNA.DataFiltration.Application
+﻿using System;
+
+namespace GPNA.DataFiltration.Application
 {
-    public record FilterData(long Id, string FilterType, string FilterDetails);
+    public record FilterData(
+        long Id, 
+        string FilterType, 
+        string FilterDetails, 
+        string PrevValue,
+        DateTime? PrevTimeStamp);
 }

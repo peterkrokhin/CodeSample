@@ -1,4 +1,4 @@
 ﻿namespace GPNA.DataFiltration.Application
 {
-    record ValueRangeFilterDetails(double? Min, double? Max);
+    record ValueRangeFilterDetails(double Min, double Max);
 }
