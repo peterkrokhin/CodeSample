@@ -37,6 +37,8 @@ namespace GPNA.DataFiltration.UnitTests
         [TestCase("VoidFilterList", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
         [TestCase("NotValidFilterType", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
         [TestCase("NotValidFilterDetails", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
+        [TestCase("NotValidPrevValue", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
+        [TestCase("NotValidPrevTimeStamp", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
         public bool ApplyFilterTest(string sourceTopic, double value, string timeStamp)
         {
             FilterKey key = new(sourceTopic, 1, 1);
@@ -111,6 +113,20 @@ namespace GPNA.DataFiltration.UnitTests
                     new FilterKey("NotValidFilterDetails", 1, 1),
                     new List<FilterData>() {
                         new FilterData(10, "ValueRange", "{\"NotValid\": 111.111, \"Max\": 222.222}", null, null)
+                    });
+
+            _filterCache
+                .Add(
+                    new FilterKey("NotValidPrevValue", 1, 1),
+                    new List<FilterData>() {
+                        new FilterData(10, "FrontDetect", "{\"Positive\": false, \"Negative\": true}", "NotValid", null)
+                    });
+
+            _filterCache
+                .Add(
+                    new FilterKey("NotValidPrevTimeStamp", 1, 1),
+                    new List<FilterData>() {
+                        new FilterData(10, "MeasurementTime", "{\"Min\": 10, \"Max\": 20}", null, null)
                     });
         }
     }
