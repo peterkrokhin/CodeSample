@@ -72,7 +72,7 @@ namespace GPNA.DataFiltration.Application
 
         public IEnumerable<FilterData>? GetFilterDataByFilterKey(FilterKey key)
         {
-            List<FilterData>? filterDataList = null;
+            List<FilterData>? filterDataList;
             lock (cacheLocker)
             {
                 _filterCache.TryGetValue(key, out filterDataList);
