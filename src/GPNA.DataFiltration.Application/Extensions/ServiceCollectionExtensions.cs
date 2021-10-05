@@ -7,7 +7,9 @@ namespace GPNA.DataFiltration.Application
         public static void AddApplicationLayerServices(this IServiceCollection services)
         {
             services.AddSingleton<IFilterStore, FilterStore>();
-            services.AddHostedService<FilterStoreService>();
+            services.AddSingleton<IMessageHandler, MessageHandler>();
+            services.AddSingleton<IFilterApplicator, FilterApplicator>();
+            services.AddHostedService<FiltrationService>();
         }
     }
 }

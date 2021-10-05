@@ -14,45 +14,45 @@ namespace GPNA.DataFiltration.UnitTests
         private Mock<ILogger<FiltrationService>> _mockLogger;
         private Dictionary<FilterKey, List<FilterData>> _filterCache;
 
-        [OneTimeSetUp]
-        public void Init()
-        {
-            CreateTestFilterCache();
-            _mockFilterStore = new();
-            _mockLogger = new();
-            _filtrationService = new(_mockFilterStore.Object, _mockLogger.Object);
-        }
+        //[OneTimeSetUp]
+        //public void Init()
+        //{
+        //    CreateTestFilterCache();
+        //    _mockFilterStore = new();
+        //    _mockLogger = new();
+        //    _filtrationService = new(_mockFilterStore.Object, _mockLogger.Object);
+        //}
 
-        [TestCase("ValueRange", 111.11d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
-        [TestCase("ValueRange", 155.55d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
-        [TestCase("ValueRange", 333.33d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
-        [TestCase("FrontDetect Positive PrevValueFalse", 0.0d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
-        [TestCase("FrontDetect Positive PrevValueFalse", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
-        [TestCase("FrontDetect Positive PrevValueTrue", 0.0d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
-        [TestCase("FrontDetect Positive PrevValueTrue", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
-        [TestCase("FrontDetect Negative PrevValueFalse", 0.0d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
-        [TestCase("FrontDetect Negative PrevValueFalse", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
-        [TestCase("FrontDetect Negative PrevValueTrue", 0.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
-        [TestCase("FrontDetect Negative PrevValueTrue", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
-        [TestCase("MeasurementTime", 1.0d, "2021-01-10T00:01:00.000", ExpectedResult = false)]
-        [TestCase("MeasurementTime", 1.0d, "2021-01-10T00:15:00.000", ExpectedResult = true)]
-        [TestCase("MeasurementTime", 1.0d, "2021-01-10T00:25:00.000", ExpectedResult = false)]
-        [TestCase("VoidFilterList", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
-        [TestCase("NotValidFilterType", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
-        [TestCase("NotValidFilterDetails", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
-        [TestCase("NotValidPrevValue", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
-        [TestCase("NotValidPrevTimeStamp", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
-        public bool ApplyFilterTest(string sourceTopic, double value, string timeStamp)
-        {
-            FilterKey key = new(sourceTopic, 1, 1);
-            _mockFilterStore.Setup(a => a.GetFilterDataByFilterKey(key)).Returns(_filterCache[key]);
+        //[TestCase("ValueRange", 111.11d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
+        //[TestCase("ValueRange", 155.55d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
+        //[TestCase("ValueRange", 333.33d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
+        //[TestCase("FrontDetect Positive PrevValueFalse", 0.0d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
+        //[TestCase("FrontDetect Positive PrevValueFalse", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
+        //[TestCase("FrontDetect Positive PrevValueTrue", 0.0d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
+        //[TestCase("FrontDetect Positive PrevValueTrue", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
+        //[TestCase("FrontDetect Negative PrevValueFalse", 0.0d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
+        //[TestCase("FrontDetect Negative PrevValueFalse", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
+        //[TestCase("FrontDetect Negative PrevValueTrue", 0.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
+        //[TestCase("FrontDetect Negative PrevValueTrue", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = false)]
+        //[TestCase("MeasurementTime", 1.0d, "2021-01-10T00:01:00.000", ExpectedResult = false)]
+        //[TestCase("MeasurementTime", 1.0d, "2021-01-10T00:15:00.000", ExpectedResult = true)]
+        //[TestCase("MeasurementTime", 1.0d, "2021-01-10T00:25:00.000", ExpectedResult = false)]
+        //[TestCase("VoidFilterList", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
+        //[TestCase("NotValidFilterType", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
+        //[TestCase("NotValidFilterDetails", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
+        //[TestCase("NotValidPrevValue", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
+        //[TestCase("NotValidPrevTimeStamp", 1.0d, "2021-01-10T00:00:00.000", ExpectedResult = true)]
+        //public bool ApplyFilterTest(string sourceTopic, double value, string timeStamp)
+        //{
+        //    FilterKey key = new(sourceTopic, 1, 1);
+        //    _mockFilterStore.Setup(a => a.GetFilterDataByFilterKey(key)).Returns(_filterCache[key]);
             
-            ParameterValue parameterValue = new()
-                { WellId = 1, ParameterId = 1, Value = value, Timestamp = DateTime.Parse(timeStamp) };
+        //    ParameterValue parameterValue = new()
+        //        { WellId = 1, ParameterId = 1, Value = value, Timestamp = DateTime.Parse(timeStamp) };
 
-            var result = _filtrationService.ApplyFilter(parameterValue, sourceTopic);
-            return result;
-        }
+        //    var result = _filtrationService.ApplyFilter(parameterValue, sourceTopic);
+        //    return result;
+        //}
 
         private void CreateTestFilterCache()
         {

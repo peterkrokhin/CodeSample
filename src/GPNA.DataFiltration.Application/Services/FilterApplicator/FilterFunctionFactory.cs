@@ -49,7 +49,6 @@ namespace GPNA.DataFiltration.Application
                 return null;
             }
             
-
             function = (ParameterValue parameter) =>
                 (parameter.Value >= details.Min) & (parameter.Value <= details.Max);
 
