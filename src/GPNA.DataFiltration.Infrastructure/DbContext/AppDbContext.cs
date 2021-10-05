@@ -6,8 +6,8 @@ namespace GPNA.DataFiltration.Infrastructure
 {
     public class AppDbContext : DbContext, IAppDbContext
     {
-        public DbSet<FilterPool> FilterPools { get; set; }
-        public DbSet<FilterConfig> FilterConfigs { get; set; }
+        public DbSet<FilterPool> FilterPools { get; set; } = null!;
+        public DbSet<FilterConfig> FilterConfigs { get; set; } = null!;
         public AppDbContext(DbContextOptions<AppDbContext> options): base(options)
         {
         }

@@ -8,13 +8,13 @@ namespace GPNA.DataFiltration.Application
         public long FilterPoolId { get; set; }
         public long WellId { get; set; }
         public int ParameterId { get; set; }
-        public string FilterType { get; set; }
-        public string FilterDetails { get; set; }
-        public string PrevValue { get; set; }
+        public string FilterType { get; set; } = String.Empty;
+        public string FilterDetails { get; set; } = String.Empty;
+        public string? PrevValue { get; set; }
         public DateTime? PrevTimeStamp { get; set; }
         public bool IsEnabled { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset UpdatetAt { get; set; }
-        public FilterPool FilterPool { get; set; }
+        public FilterPool FilterPool { get; set; } = null!;
     }
 }

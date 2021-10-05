@@ -86,11 +86,6 @@ namespace GPNA.DataFiltration.Application
             return filterDataList;
         }
 
-        public void SetPrevValueInFilterConfig(FilterKey key, ParameterValue parameter)
-        {
-
-        }
-
         public void ModifyFilterDataByFilterKey(FilterKey key, FilterData newFilterData)
         {
             try
@@ -102,19 +97,19 @@ namespace GPNA.DataFiltration.Application
 
                     // Ищем в репозитории.
                     var filterConfig = filterConfigRepo.GetById(newFilterData.Id);
-                    if (filterConfig == null)
+                    if (filterConfig is null)
                     {
                         throw new Exception($"Не найдена конфигурация фильтра с Id={newFilterData.Id} в репозитории.");
                     }
 
                     // Ищем в кэше.
                     _filterCache.TryGetValue(key, out List<FilterData>? listFilterData);
-                    if (listFilterData == null)
+                    if (listFilterData is null)
                     {
                         throw new Exception($"Неверный ключ при поиске конфигурации фильтра с Id={newFilterData.Id} в кэше.");
                     }
                     var filterData = listFilterData.Find(fd => fd.Id == newFilterData.Id);
-                    if (filterData == null)
+                    if (filterData is null)
                     {
                         throw new Exception($"Не найдена конфигурация фильтра с Id={newFilterData.Id} в кэше.");
                     }
@@ -146,10 +141,42 @@ namespace GPNA.DataFiltration.Application
             return goodTopics;
         }
 
+        public string GetGoodTopicBySourceTopic(string sourceTopic)
+        {
+            try
+            {
+                var goodTopics = _poolCache
+                    .Where(p => p.SourceTopic == sourceTopic)
+                    .Select(p => p.GoodTopic)
+                    .First();
+                return goodTopics;
+            }
+            catch (Exception e)
+            {
+                throw new Exception ($"Ошибка при определении топика назначения.", e);
+            }
+        }
+
         public IEnumerable<string> GetBadTopics()
         {
             var badTopics = _poolCache.Select(p => p.GoodTopic);
             return badTopics;
+        }
+
+        public string GetBadTopicBySourceTopic(string sourceTopic)
+        {
+            try
+            {
+                var goodTopics = _poolCache
+                    .Where(p => p.SourceTopic == sourceTopic)
+                    .Select(p => p.BadTopic)
+                    .First();
+                return goodTopics;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Ошибка при определении топика назначения.", e);
+            }
         }
     }
 }

@@ -6,6 +6,6 @@ namespace GPNA.DataFiltration.Application
         long Id, 
         string FilterType, 
         string FilterDetails, 
-        string PrevValue,
+        string? PrevValue,
         DateTime? PrevTimeStamp);
 }

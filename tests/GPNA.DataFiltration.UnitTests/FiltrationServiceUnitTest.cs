@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GPNA.DataFiltration.Application;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 
@@ -10,6 +11,7 @@ namespace GPNA.DataFiltration.UnitTests
     {
         private FiltrationService _filtrationService;
         private Mock<IFilterStore> _mockFilterStore;
+        private Mock<ILogger<FiltrationService>> _mockLogger;
         private Dictionary<FilterKey, List<FilterData>> _filterCache;
 
         [OneTimeSetUp]
@@ -17,7 +19,8 @@ namespace GPNA.DataFiltration.UnitTests
         {
             CreateTestFilterCache();
             _mockFilterStore = new();
-            _filtrationService = new(_mockFilterStore.Object);
+            _mockLogger = new();
+            _filtrationService = new(_mockFilterStore.Object, _mockLogger.Object);
         }
 
         [TestCase("ValueRange", 111.11d, "2021-01-10T00:00:00.000", ExpectedResult = false)]

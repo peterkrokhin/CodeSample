@@ -10,6 +10,7 @@ namespace GPNA.DataFiltration.Application
         IEnumerable<string> GetSourceTopics();
         IEnumerable<string> GetGoodTopics();
         IEnumerable<string> GetBadTopics();
-
+        string GetGoodTopicBySourceTopic(string sourceTopic);
+        string GetBadTopicBySourceTopic(string sourceTopic);
     }
 }
