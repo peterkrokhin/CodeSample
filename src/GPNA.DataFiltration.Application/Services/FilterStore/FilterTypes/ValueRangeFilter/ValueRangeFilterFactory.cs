@@ -8,7 +8,7 @@ namespace GPNA.DataFiltration.Application
         public IFilter Create(FilterConfig filterConfig)
         {
             var details = ParseFilterDetails(filterConfig.FilterDetails);
-            return new ValueRangeFilter(details.Min, details.Max);
+            return new ValueRangeFilter(filterConfig.Id, details.Min, details.Max);
         }
 
         private static ValueRangeFilterDetails ParseFilterDetails(string filterDatails)
@@ -27,7 +27,7 @@ namespace GPNA.DataFiltration.Application
             {
                 throw new Exception("Ошибка при создании объекта ValueRangeFilter из конфигурации.");
             }
-            return details
+            return details;
         }
     }
 }

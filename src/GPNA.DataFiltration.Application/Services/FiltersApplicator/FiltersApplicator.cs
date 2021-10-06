@@ -3,14 +3,15 @@ using Microsoft.Extensions.Logging;
 
 namespace GPNA.DataFiltration.Application
 {
-    public class FilterApplicator : IFilterApplicator
+    public class FiltersApplicator : IFiltersApplicator
     {
-        private readonly IFilterStore _filterStore;
-        private readonly ILogger<FilterApplicator> _logger;
         private const bool NOT_VALID_PARAMETER_FILTER_RESULT = false;
         private const bool NOT_FOUND_FILTERS_FILTER_RESULT = true;
+        private const bool NOT_VALID_FILTER_FILTER_RESULT = true;
+        private readonly IFilterStore _filterStore;
+        private readonly ILogger<FiltersApplicator> _logger;
 
-        public FilterApplicator(IFilterStore filterStore, ILogger<FilterApplicator> logger)
+        public FiltersApplicator(IFilterStore filterStore, ILogger<FiltersApplicator> logger)
         {
             _filterStore = filterStore;
             _logger = logger;
@@ -39,7 +40,7 @@ namespace GPNA.DataFiltration.Application
             }
 
             FilterKey key = new(sourceTopic, parameter.WellId, parameter.ParameterId);
-            var filters = _filterStore.GetFilterDataByFilterKey(key);
+            var filters = _filterStore.GetFilterByFilterKey(key);
 
             if (filters is null)
             {
@@ -49,42 +50,27 @@ namespace GPNA.DataFiltration.Application
             bool filterResult = true;
             foreach (var filter in filters)
             {
-                var function = FilterFunctionFactory.GetFilterFunction(filter);
-
                 try
                 {
-                    SaveParameterValueAndTimeStamp(key, filter, parameter);
+                    filterResult &= filter.ApplyTo(parameter);
                 }
                 catch (Exception e)
                 {
-                    string msg = $"Ошибка при сохранении состояния параметра для фильтра с Id={filter.Id}. " +
-                        "Следующая сработка фильтра может быть некорректной.";
-                    _logger.LogWarning(e, msg);
+                    _logger.LogWarning(e, $"Невозможно применить фильтр с Id={filter.GetId()}. Фильтр пропущен.");
+                    filterResult &= NOT_VALID_FILTER_FILTER_RESULT;
                 }
 
-                if (function is not null)
+                try
                 {
-                    filterResult &= function(parameter);
+                    filter.SaveParameterState(parameter, _filterStore);
                 }
-                else
+                catch (Exception e)
                 {
-                    _logger.LogWarning($"Не удалось применить фильтр с Id={filter.Id}. Проверьте конфигурацию фильтра.");
+                    _logger.LogWarning(e, $"Не удалось сохранить состояние параметра для фильтра с Id={filter.GetId()}. Следующая обработка фильтра может быть некорректной.");
                 }
             }
 
             return filterResult;
-        }
-
-        private void SaveParameterValueAndTimeStamp(FilterKey key, FilterData filter, ParameterValue parameter)
-        {
-            FilterData newFilter = new(
-                filter.Id,
-                filter.FilterType,
-                filter.FilterDetails,
-                parameter.Value?.ToString(),
-                parameter.Timestamp);
-
-            _filterStore.ModifyFilterDataByFilterKey(key, newFilter);
         }
     }
 }

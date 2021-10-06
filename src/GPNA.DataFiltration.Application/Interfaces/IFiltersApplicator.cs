@@ -1,6 +1,6 @@
 ﻿namespace GPNA.DataFiltration.Application
 {
-    interface IFilterApplicator
+    interface IFiltersApplicator
     {
         string Apply(ParameterValue parameter, string sourceTopic);
     }

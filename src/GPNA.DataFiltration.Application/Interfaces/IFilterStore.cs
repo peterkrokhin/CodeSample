@@ -4,13 +4,12 @@ namespace GPNA.DataFiltration.Application
 {
     public interface IFilterStore
     {
-        void CacheUpdate();
-        public IEnumerable<FilterData>? GetFilterDataByFilterKey(FilterKey key);
-        void ModifyFilterDataByFilterKey(FilterKey key, FilterData newFilterData);
+        void CreateCache();
+        public IEnumerable<IFilter>? GetFilterByFilterKey(FilterKey key);
         IEnumerable<string> GetSourceTopics();
-        IEnumerable<string> GetGoodTopics();
-        IEnumerable<string> GetBadTopics();
         string GetGoodTopicBySourceTopic(string sourceTopic);
         string GetBadTopicBySourceTopic(string sourceTopic);
+        void SavePrevTimestampInFilterConfig(FilterConfig filterConfig);
+        void SavePrevValueInFilterConfig(FilterConfig filterConfig);
     }
 }

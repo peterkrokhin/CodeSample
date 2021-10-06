@@ -8,7 +8,7 @@ namespace GPNA.DataFiltration.Application
         public IFilter Create(FilterConfig filterConfig)
         {
             var details = ParseFilterDetails(filterConfig.FilterDetails);
-            return new MeasurementTimeFilter(details.Min, details.Max, filterConfig.PrevTimeStamp);
+            return new MeasurementTimeFilter(filterConfig.Id, details.Min, details.Max, filterConfig.PrevTimeStamp);
         }
 
         private static MeasurementTimeFilterDetails ParseFilterDetails(string filterDatails)

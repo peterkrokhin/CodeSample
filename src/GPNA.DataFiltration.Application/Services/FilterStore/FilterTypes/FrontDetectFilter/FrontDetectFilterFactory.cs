@@ -10,7 +10,7 @@ namespace GPNA.DataFiltration.Application
         {
             var details = ParseFilterDetails(filterConfig.FilterDetails);
             var prevValue = ParsePrevValue(filterConfig.PrevValue);
-            return new FrontDetectFilter(details.Negative, details.Positive, prevValue);
+            return new FrontDetectFilter(filterConfig.Id, details.Negative, details.Positive, prevValue);
         }
 
         private static FrontDetectFilterDetails ParseFilterDetails(string filterDatails)

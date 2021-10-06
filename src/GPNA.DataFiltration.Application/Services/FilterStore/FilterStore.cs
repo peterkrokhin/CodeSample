@@ -7,17 +7,21 @@ namespace GPNA.DataFiltration.Application
 {
     public class FilterStore : IFilterStore
     {
+        private const string VALUE_RANGE_FILTER_TYPE = "ValueRange";
+        private const string FRONT_DETECT_FILTER_TYPE = "FrontDetect";
+        private const string MEASUREMENT_TIME_FILTER_TYPE = "MeasurementTime";
+
         private readonly IServiceProvider _services;
         private readonly object cacheLocker = new();
-        private Dictionary<FilterKey, List<FilterData>> _filterCache = new();
-        private List<FilterPool> _poolCache = new();
+        private Dictionary<FilterKey, List<IFilter>> _filterCache = new();
+        private Dictionary<string, (string GoodTopic, string BadTopic)> _poolCache = new();
 
         public FilterStore(IServiceProvider services)
         {
             _services = services;
         }
 
-        public void CacheUpdate()
+        public void CreateCache()
         {
             try
             {
@@ -30,7 +34,7 @@ namespace GPNA.DataFiltration.Application
             }
             catch (Exception e)
             {
-                throw new Exception("Ошибка при попытке обновления кэша конфигураций фильтров.", e);
+                throw new Exception("Ошибка при попытке создания кэша фильтров.", e);
             }
         }
 
@@ -41,115 +45,86 @@ namespace GPNA.DataFiltration.Application
             return filterConfigRepo.GetAllIncludePool();
         }
 
-        private static Dictionary<FilterKey, List<FilterData>> CreateFilterCache(IEnumerable<FilterConfig> allFilterConfigs)
+        private static Dictionary<FilterKey, List<IFilter>> CreateFilterCache(IEnumerable<FilterConfig> allFilterConfigs)
         {
-            Dictionary<FilterKey, List<FilterData>> newCache = new();
+            Dictionary<FilterKey, List<IFilter>> newCache = new();
             foreach (var fc in allFilterConfigs)
             {
                 var key = new FilterKey(fc.FilterPool.SourceTopic, fc.WellId, fc.ParameterId);
-                FilterData newFilterData = new(
-                    fc.Id, 
-                    fc.FilterType, 
-                    fc.FilterDetails, 
-                    fc.PrevValue,
-                    fc.PrevTimeStamp);
+                var filter = CreateFilter(fc);
 
                 if (newCache.ContainsKey(key))
                 {
-                    newCache[key].Add(newFilterData);
+                    newCache[key].Add(filter);
                 }
                 else
                 {
-                    newCache.Add(key, new List<FilterData>() { newFilterData });
+                    newCache.Add(key, new List<IFilter>() { filter });
                 }
             }
             return newCache;
         }
 
-        private static List<FilterPool> CreatePoolCache(IEnumerable<FilterConfig> allFilterConfigs)
+        private static IFilter CreateFilter(FilterConfig filterConfig)
         {
-            List<FilterPool> newCache = new();
-            foreach (var filterConfig in allFilterConfigs)
+            IFilter filter;
+            if (filterConfig.FilterType == VALUE_RANGE_FILTER_TYPE)
             {
-                newCache.Add(filterConfig.FilterPool);
+                filter = new ValueRangeFilterFactory().Create(filterConfig);
+            }
+            else if (filterConfig.FilterType == FRONT_DETECT_FILTER_TYPE)
+            {
+                filter = new FrontDetectFilterFactory().Create(filterConfig);
+            }
+            else if (filterConfig.FilterType == MEASUREMENT_TIME_FILTER_TYPE)
+            {
+                filter = new MeasurementTimeFilterFactory().Create(filterConfig);
+            }
+            else
+            {
+                throw new Exception("Неизвестный тип фильтра.");
+            }
+            return filter;
+        }
+
+        private static Dictionary<string, (string GoodTopic, string BadTopic)> CreatePoolCache(IEnumerable<FilterConfig> allFilterConfigs)
+        {
+            Dictionary<string, (string GoodTopic, string BadTopic)> newCache = new();
+            foreach (var fc in allFilterConfigs)
+            {
+                string sourceTopic = fc.FilterPool.SourceTopic;
+                string goodTopic = fc.FilterPool.GoodTopic;
+                string badTopic = fc.FilterPool.BadTopic;
+                if (!newCache.ContainsKey(sourceTopic))
+                {
+                    newCache.Add(sourceTopic, (goodTopic, badTopic));
+                }
             }
             return newCache;
         }
 
-        public IEnumerable<FilterData>? GetFilterDataByFilterKey(FilterKey key)
+        public IEnumerable<IFilter>? GetFilterByFilterKey(FilterKey key)
         {
-            List<FilterData>? filterDataList;
+            List<IFilter>? filters;
             lock (cacheLocker)
             {
-                _filterCache.TryGetValue(key, out filterDataList);
+                _filterCache.TryGetValue(key, out filters);
             }
-            return filterDataList;
-        }
-
-        public void ModifyFilterDataByFilterKey(FilterKey key, FilterData newFilterData)
-        {
-            try
-            {
-                lock (cacheLocker)
-                {
-                    using var scope = _services.CreateScope();
-                    var filterConfigRepo = scope.ServiceProvider.GetRequiredService<IFilterConfigRepo>();
-
-                    // Ищем в репозитории.
-                    var filterConfig = filterConfigRepo.GetById(newFilterData.Id);
-                    if (filterConfig is null)
-                    {
-                        throw new Exception($"Не найдена конфигурация фильтра с Id={newFilterData.Id} в репозитории.");
-                    }
-
-                    // Ищем в кэше.
-                    _filterCache.TryGetValue(key, out List<FilterData>? listFilterData);
-                    if (listFilterData is null)
-                    {
-                        throw new Exception($"Неверный ключ при поиске конфигурации фильтра с Id={newFilterData.Id} в кэше.");
-                    }
-                    var filterData = listFilterData.Find(fd => fd.Id == newFilterData.Id);
-                    if (filterData is null)
-                    {
-                        throw new Exception($"Не найдена конфигурация фильтра с Id={newFilterData.Id} в кэше.");
-                    }
-
-                    // Все Ок? Сохраняем в репозитории.
-                    filterConfig.FilterDetails = newFilterData.FilterDetails;
-                    filterConfigRepo.Update(filterConfig);
-
-                    // Все Ок? Сохраняем в кэше.
-                    filterData = newFilterData;
-                }
-            }
-            catch (Exception e)
-            {
-                string message = $"Ошибка при попытке изменения конфигурации фильтра с Id={newFilterData.Id}.";
-                throw new Exception(message, e);
-            }
+            return filters;
         }
 
         public IEnumerable<string> GetSourceTopics()
         {
-            var sourceTopics = _poolCache.Select(p => p.SourceTopic);
+            var sourceTopics = _poolCache.Keys;
             return sourceTopics;
-        }
-
-        public IEnumerable<string> GetGoodTopics()
-        {
-            var goodTopics = _poolCache.Select(p => p.GoodTopic);
-            return goodTopics;
         }
 
         public string GetGoodTopicBySourceTopic(string sourceTopic)
         {
             try
             {
-                var goodTopics = _poolCache
-                    .Where(p => p.SourceTopic == sourceTopic)
-                    .Select(p => p.GoodTopic)
-                    .First();
-                return goodTopics;
+                string goodTopic = _poolCache[sourceTopic].GoodTopic;
+                return goodTopic;
             }
             catch (Exception e)
             {
@@ -157,26 +132,27 @@ namespace GPNA.DataFiltration.Application
             }
         }
 
-        public IEnumerable<string> GetBadTopics()
-        {
-            var badTopics = _poolCache.Select(p => p.GoodTopic);
-            return badTopics;
-        }
-
         public string GetBadTopicBySourceTopic(string sourceTopic)
         {
             try
             {
-                var goodTopics = _poolCache
-                    .Where(p => p.SourceTopic == sourceTopic)
-                    .Select(p => p.BadTopic)
-                    .First();
-                return goodTopics;
+                var goodTopic = _poolCache[sourceTopic].BadTopic;
+                return goodTopic;
             }
             catch (Exception e)
             {
                 throw new Exception($"Ошибка при определении топика назначения.", e);
             }
+        }
+
+        public void SavePrevTimestampInFilterConfig(FilterConfig filterConfig)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SavePrevValueInFilterConfig(FilterConfig filterConfig)
+        {
+            throw new NotImplementedException();
         }
     }
 }

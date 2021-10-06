@@ -30,7 +30,7 @@ namespace GPNA.DataFiltration.Application
         {
             try
             {
-                _filterStore.CacheUpdate();
+                _filterStore.CreateCache();
             }
             catch (Exception e)
             {

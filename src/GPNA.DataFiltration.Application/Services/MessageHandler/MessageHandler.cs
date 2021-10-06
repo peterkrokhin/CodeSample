@@ -6,16 +6,16 @@ namespace GPNA.DataFiltration.Application
 {
     class MessageHandler : IMessageHandler
     {
-        private readonly IFilterApplicator _filterApplicator;
+        private readonly IFiltersApplicator _filtersApplicator;
         private readonly IMessageProducer _messageProducer;
         private readonly ILogger<MessageHandler> _logger;
 
         public MessageHandler(
-            IFilterApplicator filterApplicator, 
+            IFiltersApplicator filtersApplicator, 
             IMessageProducer messageProducer, 
             ILogger<MessageHandler> logger)
         {
-            _filterApplicator = filterApplicator;
+            _filtersApplicator = filtersApplicator;
             _messageProducer = messageProducer;
             _logger = logger;
         }
@@ -25,7 +25,7 @@ namespace GPNA.DataFiltration.Application
             try
             {
                 var parameter = ConvertMessageToParameterValue(message);
-                string targetTopic = _filterApplicator.Apply(parameter, sourceTopic);
+                string targetTopic = _filtersApplicator.Apply(parameter, sourceTopic);
                 _messageProducer.SendMessage(targetTopic, message);
             }
             catch (Exception e)

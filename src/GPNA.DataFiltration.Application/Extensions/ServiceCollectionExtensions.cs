@@ -8,7 +8,7 @@ namespace GPNA.DataFiltration.Application
         {
             services.AddSingleton<IFilterStore, FilterStore>();
             services.AddSingleton<IMessageHandler, MessageHandler>();
-            services.AddSingleton<IFilterApplicator, FilterApplicator>();
+            services.AddSingleton<IFiltersApplicator, FiltersApplicator>();
             services.AddHostedService<FiltrationService>();
         }
     }
