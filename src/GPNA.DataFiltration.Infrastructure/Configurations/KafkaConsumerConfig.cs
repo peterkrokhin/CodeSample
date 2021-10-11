@@ -7,8 +7,8 @@ namespace GPNA.DataFiltration.Infrastructure
     {
         public KafkaConsumerConfig(IConfiguration configuration)
         {
-            BootstrapServers = configuration["KafkaProducer:BootstrapServers"];
-            GroupId = configuration["KafkaProducer:GroupId"];
+            BootstrapServers = configuration["KafkaConsumer:BootstrapServers"];
+            GroupId = configuration["KafkaConsumer:GroupId"];
             AutoOffsetReset = Confluent.Kafka.AutoOffsetReset.Earliest;
         }
     }
