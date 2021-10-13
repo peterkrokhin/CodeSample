@@ -58,8 +58,6 @@ namespace GPNA.DataFiltration.Application
                         _allTasks.Add(filtrationTask);
                     }
                 }
-                Thread.Sleep(5000);
-                Stop();
             }
             catch
             {
@@ -135,6 +133,8 @@ namespace GPNA.DataFiltration.Application
             catch (OperationCanceledException)
             {
                 _logger.LogInformation($"Задача по обработке топика {topic} остановлена.");
+                // Для корректного формирования признака isCanceled
+                throw;
             }
             catch (Exception e)
             {
