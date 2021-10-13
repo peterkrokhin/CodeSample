@@ -8,6 +8,7 @@ namespace GPNA.DataFiltration.Application
         private readonly int _min;
         private readonly int _max;
         private DateTime? _prevTimeStamp;
+        private readonly object _filterLocker = new();
 
         public MeasurementTimeFilter(long id, int min, int max, DateTime? prevTimeStamp)
         {
@@ -21,28 +22,34 @@ namespace GPNA.DataFiltration.Application
 
         public bool ApplyTo(ParameterValue parameter)
         {
-            if (parameter.Timestamp is null)
+            lock (_filterLocker)
             {
-                throw new Exception("Отсутствует значение Timestamp в фильтруемом параметре.");
+                if (parameter.Timestamp is null)
+                {
+                    throw new Exception("Отсутствует значение Timestamp в фильтруемом параметре.");
+                }
+
+                if (_prevTimeStamp is null)
+                {
+                    throw new Exception($"Отсутствует значение prevTimestamp в конфигурации фильтра с Id={_id}.");
+                }
+
+                TimeSpan minDuration = TimeSpan.FromMinutes(_min);
+                TimeSpan maxDuration = TimeSpan.FromMinutes(_max);
+                TimeSpan currentDuration = parameter.Timestamp.Value - _prevTimeStamp.Value;
+
+                bool result = (currentDuration >= minDuration) & (currentDuration <= maxDuration);
+                return result;
             }
-
-            if (_prevTimeStamp is null)
-            {
-                throw new Exception($"Отсутствует значение prevTimestamp в конфигурации фильтра с Id={_id}.");
-            }
-
-            TimeSpan minDuration = TimeSpan.FromMinutes(_min);
-            TimeSpan maxDuration = TimeSpan.FromMinutes(_max);
-            TimeSpan currentDuration = parameter.Timestamp.Value - _prevTimeStamp.Value;
-
-            bool result = (currentDuration >= minDuration) & (currentDuration <= maxDuration);
-            return result;
         }
 
         public void SaveParameterState(ParameterValue parameter, IFilterStore filterStore)
         {
-            _prevTimeStamp = parameter.Timestamp;
-            filterStore.SavePrevTimestampInFilterConfig(GetFilterConfig());
+            lock (_filterLocker)
+            {
+                filterStore.SavePrevTimestampInFilterConfig(GetFilterConfig());
+                _prevTimeStamp = parameter.Timestamp;
+            }
         }
 
         private FilterConfig GetFilterConfig()

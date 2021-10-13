@@ -20,7 +20,7 @@ namespace GPNA.DataFiltration.Infrastructure
             while (!cancellationToken.IsCancellationRequested)
             {
                 var consumeResult = _consumer.Consume(cancellationToken);
-                messageHandler.Handle(consumeResult.Topic, consumeResult.Message.Value);  
+                messageHandler.Handle(consumeResult.Topic, consumeResult.Message.Value);
             }
             _consumer.Close();
         }

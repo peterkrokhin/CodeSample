@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using GPNA.DataFiltration.Application;
-using Microsoft.Extensions.Configuration;
 
 namespace GPNA.DataFiltration.Infrastructure
 {

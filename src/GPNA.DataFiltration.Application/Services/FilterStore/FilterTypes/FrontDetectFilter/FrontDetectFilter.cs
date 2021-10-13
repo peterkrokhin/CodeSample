@@ -8,6 +8,7 @@ namespace GPNA.DataFiltration.Application
         private readonly bool _negative;
         private readonly bool _positive;
         private double? _prevValue;
+        private readonly object _filterLocker = new();
 
         public FrontDetectFilter(long id, bool negative, bool positive, double? prevValue)
         {
@@ -21,20 +22,26 @@ namespace GPNA.DataFiltration.Application
 
         public bool ApplyTo(ParameterValue parameter)
         {
-            if (_prevValue is null)
+            lock (_filterLocker)
             {
-                throw new Exception($"Отсутствует значение prevValue в конфигурации фильтра с Id={_id}.");
-            }
+                if (_prevValue is null)
+                {
+                    throw new Exception($"Отсутствует значение prevValue в конфигурации фильтра с Id={_id}.");
+                }
 
-            bool result = (_positive & (_prevValue == 0d) & (parameter.Value == 1d)) |
-                (_negative & (_prevValue == 1d) & (parameter.Value == 0.0d));
-            return result;
+                bool result = (_positive & (_prevValue == 0d) & (parameter.Value == 1d)) |
+                    (_negative & (_prevValue == 1d) & (parameter.Value == 0.0d));
+                return result;
+            }
         }
 
         public void SaveParameterState(ParameterValue parameter, IFilterStore filterStore)
         {
-            _prevValue = parameter.Value;
-            filterStore.SavePrevValueInFilterConfig(GetFilterConfig());
+            lock (_filterLocker)
+            {
+                filterStore.SavePrevValueInFilterConfig(GetFilterConfig());
+                _prevValue = parameter.Value;
+            }
         }
 
         private FilterConfig GetFilterConfig()

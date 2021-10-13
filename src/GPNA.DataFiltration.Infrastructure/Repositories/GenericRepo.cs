@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GPNA.DataFiltration.Application;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,12 @@ namespace GPNA.DataFiltration.Infrastructure
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             var result = await _dbSet.ToListAsync();
+            return result;
+        }
+
+        public IEnumerable<T> GetAll()
+        {
+            var result = _dbSet.ToList();
             return result;
         }
 

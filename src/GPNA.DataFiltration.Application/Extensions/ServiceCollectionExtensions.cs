@@ -9,7 +9,7 @@ namespace GPNA.DataFiltration.Application
             services.AddSingleton<IFilterStore, FilterStore>();
             services.AddSingleton<IMessageHandler, MessageHandler>();
             services.AddSingleton<IFiltersApplicator, FiltersApplicator>();
-            services.AddHostedService<FiltrationService>();
+            services.AddSingleton<IFiltrationService, FiltrationService>();
         }
     }
 }

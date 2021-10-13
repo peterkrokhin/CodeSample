@@ -6,6 +6,7 @@ namespace GPNA.DataFiltration.Application
     public interface IGenericRepo<T>
     {
         Task<IEnumerable<T>> GetAllAsync();
+        IEnumerable<T> GetAll();
         Task<T?> GetByIdAsync(long id);
         T? GetById(long id);
         Task UpdateAsync(T entity);

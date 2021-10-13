@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GPNA.DataFiltration.Application
@@ -29,7 +28,9 @@ namespace GPNA.DataFiltration.Application
                 {
                     var allFilterConfigs = GetAllFilterConfigs();
                     _filterCache = CreateFilterCache(allFilterConfigs);
-                    _poolCache = CreatePoolCache(allFilterConfigs);
+
+                    var allFilterPools = GetAllFilterPools();
+                    _poolCache = CreatePoolCache(allFilterPools);
                 }
             }
             catch (Exception e)
@@ -87,14 +88,21 @@ namespace GPNA.DataFiltration.Application
             return filter;
         }
 
-        private static Dictionary<string, (string GoodTopic, string BadTopic)> CreatePoolCache(IEnumerable<FilterConfig> allFilterConfigs)
+        private IEnumerable<FilterPool> GetAllFilterPools()
+        {
+            using var scope = _services.CreateScope();
+            var filterPoolRepo = scope.ServiceProvider.GetRequiredService<IFilterPoolRepo>();
+            return filterPoolRepo.GetAll();
+        }
+
+        private static Dictionary<string, (string GoodTopic, string BadTopic)> CreatePoolCache(IEnumerable<FilterPool> allFilterPools)
         {
             Dictionary<string, (string GoodTopic, string BadTopic)> newCache = new();
-            foreach (var fc in allFilterConfigs)
+            foreach (var fc in allFilterPools)
             {
-                string sourceTopic = fc.FilterPool.SourceTopic;
-                string goodTopic = fc.FilterPool.GoodTopic;
-                string badTopic = fc.FilterPool.BadTopic;
+                string sourceTopic = fc.SourceTopic;
+                string goodTopic = fc.GoodTopic;
+                string badTopic = fc.BadTopic;
                 if (!newCache.ContainsKey(sourceTopic))
                 {
                     newCache.Add(sourceTopic, (goodTopic, badTopic));
