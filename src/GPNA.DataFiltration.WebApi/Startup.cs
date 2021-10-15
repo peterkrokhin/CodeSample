@@ -1,6 +1,7 @@
 using System;
 using GPNA.DataFiltration.Application;
 using GPNA.DataFiltration.Infrastructure;
+using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -39,6 +40,7 @@ namespace GPNA.DataFiltration.WebApi
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "GPNA.DataFiltration.WebApi v1"));
             }
             app.UseExceptionHandler("/api/errors");
+            app.UseProblemDetails();
 
             app.UseRouting();
 
@@ -57,8 +59,7 @@ namespace GPNA.DataFiltration.WebApi
             catch (Exception e)
             {
                 throw new Exception("Не удалось запустить FiltrationService", e);
-            }
-            
+            } 
         }
     }
 }

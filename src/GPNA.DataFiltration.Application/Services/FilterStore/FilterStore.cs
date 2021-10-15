@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace GPNA.DataFiltration.Application
 {
@@ -11,13 +12,15 @@ namespace GPNA.DataFiltration.Application
         private const string MEASUREMENT_TIME_FILTER_TYPE = "MeasurementTime";
 
         private readonly IServiceProvider _services;
+        private readonly ILogger<FilterStore> _logger;
         private readonly object cacheLocker = new();
         private Dictionary<FilterKey, List<IFilter>> _filterCache = new();
         private Dictionary<string, (string GoodTopic, string BadTopic)> _poolCache = new();
 
-        public FilterStore(IServiceProvider services)
+        public FilterStore(IServiceProvider services, ILogger<FilterStore> logger)
         {
             _services = services;
+            _logger = logger;
         }
 
         public void CreateCache()
@@ -83,7 +86,7 @@ namespace GPNA.DataFiltration.Application
             }
             else
             {
-                throw new Exception("Неизвестный тип фильтра.");
+                throw new Exception($"Неизвестный тип {filterConfig.FilterType} для фильтра с Id={filterConfig.Id}.");
             }
             return filter;
         }
@@ -155,12 +158,52 @@ namespace GPNA.DataFiltration.Application
 
         public void SavePrevTimestampInFilterConfig(FilterConfig filterConfig)
         {
-            throw new NotImplementedException();
+            var id = filterConfig.Id;
+            var prevTimeStamp = filterConfig.PrevTimeStamp;
+
+            if (prevTimeStamp is null)
+            {
+                _logger.LogWarning($"Ошибка сохранения Timestamp параметра для фильтра Id={id}. Timestamp не может быть null при сохранении.");
+                return;
+            }
+
+            using var scope = _services.CreateScope();
+            var filterConfigRepo = scope.ServiceProvider.GetRequiredService<IFilterConfigRepo>();
+            var searchFilterConfig = filterConfigRepo.GetById(id);
+
+            if (searchFilterConfig is null)
+            {
+                _logger.LogWarning($"Ошибка сохранения Timestamp параметра для фильтра Id={id}. Фильтр не найден.");
+                return;
+            }
+
+            searchFilterConfig.PrevTimeStamp = prevTimeStamp;
+            filterConfigRepo.Update(searchFilterConfig);
         }
 
         public void SavePrevValueInFilterConfig(FilterConfig filterConfig)
         {
-            throw new NotImplementedException();
+            var id = filterConfig.Id;
+            var prevValue = filterConfig.PrevValue;
+            
+            if (prevValue is null)
+            {
+                _logger.LogWarning($"Ошибка сохранения Value параметра для фильтра Id={id}. Value не может быть null при сохранении.");
+                return;
+            }
+
+            using var scope = _services.CreateScope();
+            var filterConfigRepo = scope.ServiceProvider.GetRequiredService<IFilterConfigRepo>();
+            var searchFilterConfig = filterConfigRepo.GetById(id);
+            
+            if (searchFilterConfig is null)
+            {
+                _logger.LogWarning($"Ошибка сохранения сотояния параметра для фильтра Id={id}. Фильтр не найден.");
+                return;
+            }
+
+            searchFilterConfig.PrevValue = prevValue;
+            filterConfigRepo.Update(searchFilterConfig);
         }
     }
 }

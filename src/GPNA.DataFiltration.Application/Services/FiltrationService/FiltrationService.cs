@@ -48,6 +48,7 @@ namespace GPNA.DataFiltration.Application
 
                     _allTasks = new();
 
+                    // Отдельные (для каждого топика) задачи по фильтрации.
                     var topics = _filterStore.GetSourceTopics();
                     foreach (var topic in topics)
                     {
@@ -109,6 +110,7 @@ namespace GPNA.DataFiltration.Application
                         {
                             allTasksComleted &= task.IsCompleted;
                         }
+                        Thread.Sleep(5);
                     }
                 }
                 finally
@@ -132,8 +134,8 @@ namespace GPNA.DataFiltration.Application
             }
             catch (OperationCanceledException)
             {
-                _logger.LogInformation($"Задача по обработке топика {topic} остановлена.");
-                // Для корректного формирования признака isCanceled
+                _logger.LogInformation($"Задача по обработке топика {topic} отменена по запросу.");
+                // Для корректного формирования признака isCanceled.
                 throw;
             }
             catch (Exception e)

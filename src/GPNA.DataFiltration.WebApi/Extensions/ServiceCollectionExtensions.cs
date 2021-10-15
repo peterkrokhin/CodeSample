@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -77,6 +78,7 @@ namespace GPNA.DataFiltration.WebApi
                     }
                 });
             });
+            services.AddProblemDetails();
         }
     }
 }
